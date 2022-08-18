@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sys
+import time
 import json
 import math
 import numpy as np
@@ -248,22 +249,31 @@ def main():
     data = DataStruct()
     with open(logfilename, mode="w") as logfile:
         while True:
+            t_start = time.perf_counter()
             iteration = fixed(data)
+            t_end = time.perf_counter()
             l = linalg.eig(data.dphidx.T)[0]
             comp = True if abs(l[0].imag) < 1e-8 else False
             str = "{0:2d} ".format(iteration)
+            logstr = ""
             for i in range(len(data.dic["params"])):
                 str += "{0: .5f} ".format(data.dic["params"][i])
+                logstr += "{0:} ".format(data.dic["params"][i])
             for i in range(len(data.dic["x0"])):
                 str += "{0: .8f} ".format(data.dic["x0"][i])
+                logstr += "{0:} ".format(data.dic["x0"][i])
             if comp == True:
                 str += "R "
-                str += "{0: .7f} {1: .7f}".format(l[0].real, l[1].real)
+                str += "{0: .7f} {1: .7f} ".format(l[0].real, l[1].real)
             else:
                 str += "C "
-                str += "{0: .7f} {1: .7f}".format(l[0].real, l[0].imag)
+                str += "{0: .7f} {1: .7f} ".format(l[0].real, l[0].imag)
+                str += "ABS "
+                str += "{0: .7f} ".format(abs(l[0]))
+            str += "({0:}[ms])".format(int((t_end - t_start) * 1e03))
+            # print(l)
             print(str)
-            logfile.write(str + "\n")
+            logfile.write(logstr + "\n")
             pos = data.dic["increment_param"]
             data.dic["params"][pos] += data.dic["dparams"][pos]
 
