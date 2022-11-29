@@ -8,6 +8,7 @@ import numpy.linalg as la
 from scipy.integrate import solve_ivp
 from scipy import linalg
 from numpy.linalg import solve
+import itertools as it
 
 # from sympy import *
 
@@ -47,52 +48,33 @@ def det_derivative(A, dA):
 
 
 def bialt_square(A):
-    dim = A.shape[0]
-    bialt_dim = sum(range(dim))
-    ret = np.zeros((bialt_dim, bialt_dim))
-    row = 0
-    col = 0
+    n = A.shape[0]
+    bialt_dim = sum(range(n))
+    result = np.zeros((bialt_dim, bialt_dim))
     temp = np.zeros((2, 2))
-    for p in range(1, dim):
-        for q in range(p):
-            for r in range(1, dim):
-                for s in range(r):
-                    temp[0, 0] = A[p, r]
-                    temp[0, 1] = A[p, s]
-                    temp[1, 0] = A[q, r]
-                    temp[1, 1] = A[q, s]
-                    ret[row, col] = np.linalg.det(temp)
-                    col += 1
-            col = 0
-            row += 1
-    return ret
+    result_idx = ((i, j) for i in range(bialt_dim) for j in range(bialt_dim))
+    mul_idx = [(i, j) for i in range(1, n) for j in range(i)]
+    for row, col in it.product(mul_idx, mul_idx):
+        for i, j in it.product([0, 1], [0, 1]):
+            temp[i, j] = A[row[i], col[j]]
+        result[next(result_idx)] = np.linalg.det(temp)
+    return result
 
 
 def bialt_square_derivative(A, dA):
-    dim = A.shape[0]
-    bialt_dim = sum(range(dim))
-    ret = np.zeros((bialt_dim, bialt_dim))
-    row = 0
-    col = 0
+    n = A.shape[0]
+    bialt_dim = sum(range(n))
+    result = np.zeros((bialt_dim, bialt_dim))
     temp = np.zeros((2, 2))
     dtemp = np.zeros((2, 2))
-    for p in range(1, dim):
-        for q in range(p):
-            for r in range(1, dim):
-                for s in range(r):
-                    temp[0, 0] = A[p, r]
-                    temp[0, 1] = A[p, s]
-                    temp[1, 0] = A[q, r]
-                    temp[1, 1] = A[q, s]
-                    dtemp[0, 0] = dA[p, r]
-                    dtemp[0, 1] = dA[p, s]
-                    dtemp[1, 0] = dA[q, r]
-                    dtemp[1, 1] = dA[q, s]
-                    ret[row, col] = det_derivative(temp, dtemp)
-                    col += 1
-            col = 0
-            row += 1
-    return ret
+    result_idx = ((i, j) for i in range(bialt_dim) for j in range(bialt_dim))
+    mul_idx = [(i, j) for i in range(1, n) for j in range(i)]
+    for row, col in it.product(mul_idx, mul_idx):
+        for i, j in it.product([0, 1], [0, 1]):
+            temp[i, j] = A[row[i], col[j]]
+            dtemp[i, j] = dA[row[i], col[j]]
+        result[next(result_idx)] = det_derivative(temp, dtemp)
+    return result
 
 
 def func(t, x, data):
