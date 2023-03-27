@@ -5,14 +5,9 @@ import os
 # fmt: off
 # DO NOT EDIT ABOVE
 
-# non organized multivib
+# system description
 xdim = 3
 pdim = 4
-
-# def func(t, x, p):
-#     f = [(p[6]*p[0]**p[4])/(p[0]**p[4]+(p[3]*x[1])**p[4]) - p[1]*x[0] + p[5]*sp.cos(t),
-#          (p[6]*p[0]**p[4])/(p[0]**p[4] + (p[3]*x[0])**p[4]) - p[2]*x[1]]
-#     return sp.Matrix(f)
 
 def func(t, x, p):
     f = [
@@ -20,6 +15,9 @@ def func(t, x, p):
          -(x[0]**2 + 3*x[2]**2)*x[0]/8 + sp.cos(t)*p[3] - p[0]*x[1],
          -(3*x[0]**2 + x[2]**2)*p[1]*x[2]/8 + p[2]]
     return sp.Matrix(f)
+
+# fmt: on
+# DO NOT EDIT BELOW
 
 header = """\
 #include "dynamical_system.hpp"
@@ -53,9 +51,9 @@ code += ")\n"
 
 for idx_param in range(pdim):
     if idx_param == 0:
-        code += "\tif data.dic[\"variable_param\"] == 0:\n"
+        code += '\tif data.dic["variable_param"] == 0:\n'
     else:
-        code += "\telif data.dic[\"variable_param\"] == " + str(idx_param) + ":\n"
+        code += '\telif data.dic["variable_param"] == ' + str(idx_param) + ":\n"
     code += "\t\t"
     dfdlambda = sp.diff(f, sym_p[idx_param])
     code += "dfdl = np.array("
@@ -72,10 +70,10 @@ code += ")\n"
 
 for idx_param in range(pdim):
     if idx_param == 0:
-        code += "\tif data.dic[\"variable_param\"] == 0:\n"
+        code += '\tif data.dic["variable_param"] == 0:\n'
     else:
-        code += "\telif data.dic[\"variable_param\"] == " + str(idx_param) + ":\n"    
-    code += "\t\t"    
+        code += '\telif data.dic["variable_param"] == ' + str(idx_param) + ":\n"
+    code += "\t\t"
     dfdxdlambda = sp.diff(dfdx, sym_p[idx_param])
     code += "d2fdxdl = np.array("
     code += str(dfdxdlambda)
@@ -90,8 +88,8 @@ for i in range(pdim):
 code = code.replace("cos(t)", "np.cos(t)")
 code = code.replace("log(", "np.log(")
 
-f = open('sys_func.py', 'w')
+f = open("sys_func.py", "w")
 f.write(code)
 f.close()
 
-os.system('black sys_func.py')
+os.system("black sys_func.py")
