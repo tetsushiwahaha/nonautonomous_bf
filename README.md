@@ -26,7 +26,7 @@ python3 bf.py <your_input_json_file>
 * "variable_param" : 変数パラメタを指定
 
 ## 使用例
-"sys_func.py"に系を記述し，系のヤコビアン等のコードを自動生成します．("sys_func.py"が生成されます)．
+"func_gen.py"に系を記述し，系のヤコビアン等のコードを自動生成します．("sys_func.py"が生成されます)．
 その後，付属のNS分岐用の入力ファイルを読ませます．
 ```
 python3 func_gen.py 
