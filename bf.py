@@ -9,6 +9,7 @@ from scipy.integrate import solve_ivp
 from scipy import linalg
 from numpy.linalg import solve
 import itertools as it
+import sys_func
 
 # from sympy import *
 
@@ -81,45 +82,10 @@ def func(t, x, data):
     dim = data.dim  # number of dimension
     ind_ui, ind_uj = np.triu_indices(dim)
 
-    # fmt: off/on is the escape sequence of BLACK formatter
-    # fmt: off
-    # ---- user defined ---------
-    # 3-dim Duffing
     p = np.zeros(4)
-    p[0] = data.dic["params"][0]
-    p[1] = data.dic["params"][1]
-    p[2] = data.dic["params"][2]
-    p[3] = data.dic["params"][3]
-    f = [
-         x[1],
-         -(x[0]**2 + 3*x[2]**2)*x[0]/8 + np.cos(t)*p[3] - p[0]*x[1],
-         -(3*x[0]**2 + x[2]**2)*p[1]*x[2]/8 + p[2]
-        ]
-    # f = np.array(f)
-    dfdx = [
-            [0, 1, 0],
-            [-3*x[0]**2/8 - 3*x[2]**2/8, -p[0], -3*x[0]*x[2]/4],
-            [-3*p[1]*x[0]*x[2]/4, 0, (-3*x[0]**2/8 - x[2]**2/8)*p[1] - p[1]*x[2]**2/4]
-           ]
-    dfdx = np.array(dfdx)
-    # B
-    # dfdl = np.array([0, np.cos(t), 0])
-    # B0
-    dfdl = np.array([0, 0, 1])
-    d2fdx2 = [[[0, 0, 0],
-               [-3*x[0]/4, 0, -3*x[2]/4], 
-               [-3*p[1]*x[2]/4, 0, -3*p[1]*x[0]/4]],
-              [[0, 0, 0], 
-               [0, 0, 0], 
-               [0, 0, 0]],
-              [[0, 0, 0], 
-               [-3*x[2]/4, 0, -3*x[0]/4], 
-               [-3*p[1]*x[0]/4, 0, -3*p[1]*x[2]/4]]
-              ]
-    d2fdx2 = np.array(d2fdx2)
-    d2fdxdl = np.zeros((3, 3))
-    # -------------
-    # fmt: on
+    for i in range(len(data.dic["params"])):
+        p[i] = data.dic["params"][i]
+    f, dfdx, dfdl, d2fdx2, d2fdxdl = sys_func.sys_func(t, x, p, data)
 
     dphidx = x[dim : data.ve].reshape(dim, dim).T
     dphidl = x[data.ve : data.vel]
