@@ -6,7 +6,9 @@ IEICE Fundamentals Review「Pythonで挑む分岐解析」の付属プログラ�
 * numpy, scipy
 
 ## 使用法
+func_gen.pyに系を記述した後：
 ```
+python3 func_gen.py
 python3 bf.py <your_input_json_file>
 ```
 
